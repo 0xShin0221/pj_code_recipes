@@ -1,0 +1,28 @@
+# Sidebar navigation
+
+- label: 'Introduction'
+  link: '/'
+- label: 'Getting started'
+  link: '/getting-started'
+- label: Usage
+  items:
+    - label: 'Creating docs'
+      link: '/usage/creating-docs'
+    - label: 'Navigation'
+      link: '/usage/navigation'
+    - label: 'Shadowing'
+      link: '/usage/shadowing'
+- label: GrowthHack
+  items:
+    - label: 'ALL'
+      link: '/tips/growthhack/list'
+    - label: 'Twitter'
+      link: '/tips/growthhack/twitter'
+- label: IaaS
+  items:
+    - label: 'ALL'
+      link: '/tips/IaaS/cdk/list'
+    - label: 'CDK-ECS-Fargate'
+      link: '/tips/IaaS/cdk/ecs-fargate'
+    - label: 'CDK-SAM'
+      link: '/tips/IaaS/cdk/sam'

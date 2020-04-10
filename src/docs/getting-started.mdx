@@ -1,0 +1,60 @@
+---
+title: 'Getting started'
+---
+
+You can clone from here:
+
+```sh
+git clone https://github.com/sintaro/sales-hack
+```
+
+But, if you prefer, you can install and configure manually.
+
+```bash
+# Using Yarn:
+yarn add @rocketseat/gatsby-theme-docs
+
+# Using NPM:
+npm i @rocketseat/gatsby-theme-docs
+```
+
+## Theme Options
+
+| Key        | Default | Required | Description                                                                                                                    |
+| ---------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| basePath   | /       | No       | Root url for all docs                                                                                                          |
+| configPath | config  | No       | Location of config files                                                                                                       |
+| docsPath   | docs    | No       | The site description for SEO and social (FB, Twitter) tags                                                                     |
+| githubUrl  | -       | No       | The complete URL of your repository. For example: `https://github/rocketseat/gatsby-themes`                                    |
+| baseDir    | -       | No       | If your Gatsby site does not live in the root of your project directory/git repo, pass the subdirectory name here (ex: `docs`) |
+
+## Example usage
+
+```js title=gatsby-config.js
+module.exports = {
+  siteMetadata: {
+    siteTitle: `@rocketseat/gatsby-theme-docs`,
+    defaultTitle: `@rocketseat/gatsby-theme-docs`,
+    siteTitleShort: `gatsby-theme-docs`,
+    siteDescription: `OSSで管理しているCode tips集のメディアです`,
+    siteUrl: `https://codetips.netlify.com`,
+    siteAuthor: `@rocketseat`,
+    siteImage: `/banner.png`,
+    siteLanguage: `jp`,
+    themeColor: `#ff8733`,
+  },
+  plugins: [
+    {
+      resolve: `@rocketseat/gatsby-theme-docs`,
+      options: {
+        docsPath: `src/docs`,
+        basePath: `/`,
+      },
+    },
+  ],
+};
+```
+
+Once you have installed the dependencies you will need to create the [navigation](/usage/navigation) and [documentation](/usage/creating-docs) file.
+
+After that, you are ready 🚀
