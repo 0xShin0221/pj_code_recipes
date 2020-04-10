@@ -4,7 +4,7 @@ module.exports = {
     defaultTitle: `Code Recipes`,
     siteTitleShort: `code Recipes`,
     siteDescription: `OSSのCodeのレシピ集`,
-    siteUrl: `https://rocketdocs.netlify.com`,
+    siteUrl: `https://code-recipes.netlify.com`,
     siteAuthor: `@sintaro`,
     siteImage: `/banner.png`,
     siteLanguage: `jp`,
