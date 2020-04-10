@@ -1,16 +1,16 @@
 module.exports = {
   siteMetadata: {
-    siteTitle: `@rocketseat/gatsby-theme-docs`,
-    defaultTitle: `@rocketseat/gatsby-theme-docs`,
-    siteTitleShort: `gatsby-theme-docs`,
-    siteDescription: `Out of the box Gatsby Theme for creating documentation websites easily and quickly`,
+    siteTitle: `Code Recipes`,
+    defaultTitle: `Code Recipes`,
+    siteTitleShort: `code Recipes`,
+    siteDescription: `OSSのCodeのレシピ集`,
     siteUrl: `https://rocketdocs.netlify.com`,
-    siteAuthor: `@rocketseat`,
+    siteAuthor: `@sintaro`,
     siteImage: `/banner.png`,
-    siteLanguage: `en`,
-    themeColor: `#7159c1`,
+    siteLanguage: `jp`,
+    themeColor: `#e87624`,
     basePath: `/`,
-    footer: `Theme by Rocketseat`,
+    footer: `@code recipes`,
   },
   plugins: [
     {

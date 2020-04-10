@@ -4,24 +4,24 @@
   link: '/'
 - label: 'Getting started'
   link: '/getting-started'
-- label: Usage
+- label: Guide
   items:
     - label: 'Creating docs'
-      link: '/usage/creating-docs'
-    - label: 'Navigation'
-      link: '/usage/navigation'
-    - label: 'Shadowing'
-      link: '/usage/shadowing'
+      link: '/guide/creating-docs'
+    - label: 'Member'
+      link: '/guide/member'
+    - label: 'Templates'
+      link: '/guide/templates'
 - label: GrowthHack
   items:
     - label: 'ALL'
-      link: '/tips/growthhack/list'
+      link: '/tips/growthhack/all'
     - label: 'Twitter'
       link: '/tips/growthhack/twitter'
 - label: IaaS
   items:
     - label: 'ALL'
-      link: '/tips/IaaS/cdk/list'
+      link: '/tips/IaaS/cdk/all'
     - label: 'CDK-ECS-Fargate'
       link: '/tips/IaaS/cdk/ecs-fargate'
     - label: 'CDK-SAM'
