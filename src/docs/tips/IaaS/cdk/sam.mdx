@@ -30,8 +30,24 @@ $ brew install aws-sam-cli
 ```sh
 $ cdk init app --language=python
 $ source .env/bin/activate
+```
+
+今回SAMを利用するので,`setup.py`に追記
+
+```python title=setup.py
+...
+    install_requires=[
+        "aws-cdk.core==1.32.1",
+        "aws-cdk.aws-sam, #追加
+    ],
+...
+```
+
+準備ができたのでCDK initで作成した.env環境にインストール
+
+```sh 
+$ source .env/bin/activate
 $ pip install -r requirements.txt 
-$ pip install aws-cdk.aws-sam
 ```
 
 
