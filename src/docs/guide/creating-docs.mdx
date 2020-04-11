@@ -39,14 +39,24 @@ yarn start
 
 ## 2. 記事制作のIssueを作成
 
-記事制作起案用のIssueテンプレートをCopyします。
+記事制作起案用のIssueテンプレートを使用してIssueを作成してください。
+
+テンプレートは下記にあります。
+> .github/ISSUE_TEMPLATE/IssueTip.md
 
 ```md title=記事制作起案用のIssueテンプレート
+
+タイトルを[記事追加]、以下の２つをIssueの内容に追加してIssueを立てて下さい。
+
+## 要約
+
+
+## 関連技術
 
 
 ```
 
-下記のより新たなIssueを作成します。
+下記より新たなIssueを作成します。
 
 https://github.com/sintaro/pj_code_recipes/issues
 
@@ -54,9 +64,43 @@ https://github.com/sintaro/pj_code_recipes/issues
 
 ## 3. 記事制作用の作業ブランチで作業開始
 
+Featureブランチを新規で作成し`feature/issue_#${issue_number}`にて作業を開始して下さい。
+
 ## 4. 記事の制作のフォルダについて
+
+> src/docs/tips
+
+配下に記事制作用のフォルダ/ファイルを配置し、記事を作成してください。
+
 
 ## 5. 記事の基本構成について
 
+記事制作用のIssueテンプレートを使用してIssueを作成してください。
+
+テンプレートは下記にあります。
+> .github/ISSUE_TEMPLATE/BaseTip.md
+
+```md title=記事制作用のテンプレート
+
+<!-- タイトルは必須となります。->
+
+---
+title: タイトル
+description: 記事の説明
+---
+
+<!-- 以下はあくまでテンプレートですので、記事制作において変更しても構いません。->
+
+## Introduction:説明
+
+## TL;DR:要約
+
+## Requirement:前提
+
+
+```
+
 ## 6. 制作後のプルリクエストについて
+
+1記事1PRにてお願いします。
 
