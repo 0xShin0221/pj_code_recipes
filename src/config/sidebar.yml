@@ -26,3 +26,5 @@
       link: '/tips/IaaS/cdk/ecs-fargate'
     - label: 'CDK-SAM'
       link: '/tips/IaaS/cdk/sam'
+    - label: 'CDK-Lambda-APIGateway'
+      link: '/tips/IaaS/cdk/lambda-apigateway'
