@@ -2,69 +2,61 @@
 title: 記事の作り方・流れ
 ---
 
-本サイトで掲載する記事の作り方とその承認までの流れを説明します。By creating a MDX file inside your docs folder it will be created as a page, with the path defined by the filename.
-Inside all docs files, you can define the following options:
+本サイトで掲載する記事の作り方とその承認までの流れを説明します。
 
+記事制作までは下記の流れとなります。
+```txt title=記事制作の流れ
+1. ローカルでの環境構築
 
-### Example:
+2. 記事制作のIssueを作成
 
-```mdx
----
-title: 'My Example'
-description: 'A simple description for this page'
-image: /banner.jpeg
----
+3. 記事制作用の作業ブランチで作業開始
 
-Wow, this is a nice page
+4. 記事の制作のフォルダについて
+
+5. 記事の基本構成について
+
+6. 制作後のプルリクエストについて
 ```
 
-## Embeding files
+## 1. ローカルでの環境構築
 
-In a documentation website, sometimes you will need to embed well known services (like CodeSandbox, Twitter, or others...). If you need to
-do it, you can simply copy-paste the link (powered by the awesome [gatsby-remark-embeder](https://www.gatsbyjs.org/packages/gatsby-remark-embedder/)).
-Make sure to check the [supported services](https://github.com/MichaelDeBoey/gatsby-remark-embedder#supported-services).
+ローカルで実行できるようにします。
 
-https://youtu.be/QfcozcbDhNM
-
-## Code Highlight
-
-### Title
-
-To show the title, just add it to your code block. Ex: `title=src/myfile.css`
-
-```css title=src/myfile.css
-.gatsby::before {
-  content: 'niceee...';
-}
+```sh title=gitリポジトリをクローン
+git clone https://github.com/sintaro/pj_code_recipes.git
 ```
 
-### Line numbers
+必要モジュールをインストールし実行します。
 
-If you want to show line number, just add a option `lineNumbers=true`.
-
-```js lineNumbers=true
-const rocket = {
-  launch: () => console.log('Launching...'),
-};
-
-rocket.launch();
+```sh
+cd pj_code_recipes
+yarn install
+yarn start
 ```
 
-### React live
+`http://localhost:8000`でローカルで実行が確認できます。
 
-As mentioned in the introduction, this theme uses `react-live`, so you can
-create a playground for live editing React components.
+## 2. 記事制作のIssueを作成
 
-To use it, just add a `live=true` option to your code block.
+記事制作起案用のIssueテンプレートをCopyします。
 
-```jsx live=true
-function MyComponent() {
-  function handleButtonClick() {
-    alert('wowww');
-  }
+```md title=記事制作起案用のIssueテンプレート
 
-  return <button onClick={handleButtonClick}>Hey, click me!</button>;
-}
 
-render(<MyComponent />);
 ```
+
+下記のより新たなIssueを作成します。
+
+https://github.com/sintaro/pj_code_recipes/issues
+
+
+
+## 3. 記事制作用の作業ブランチで作業開始
+
+## 4. 記事の制作のフォルダについて
+
+## 5. 記事の基本構成について
+
+## 6. 制作後のプルリクエストについて
+
