@@ -9,6 +9,7 @@ PythonでAWS CDKでLambda,APIGatewayのスタックを作成
 ## TL;DR
 - CDKでLambda・APIGatewayのスタックを作成しデプロイ・検証
 - Python
+- CloudFormationテンプレートを作成しSAM CLIでローカルで検証
 
 ## github repo
 
@@ -129,5 +130,8 @@ Hello World
 $ cdk synth --no-staging > template.yml
 ```
 
-また、生成されたCFnのテンプレートファイルとSAM CLI,DynamoDB Localを用いるとローカル環境で検証することも出来るので手元で確認したい時にはこの環境も構築したいところですね。
-[参考のリンク](https://dev.classmethod.jp/articles/cdk-local-develop/)
+また、生成されたCFnのテンプレートファイルとSAM CLIで作成した環境をローカルで検証することができます。
+
+```sh
+$ sam local start-api -t template.yaml
+```
