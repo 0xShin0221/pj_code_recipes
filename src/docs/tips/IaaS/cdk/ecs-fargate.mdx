@@ -1,9 +1,114 @@
 ---
-title: AWS CDKを使ってECS Fargateで稼働するFastAPIのアプリとリソース
+title: 【Python】CDKでECS Fargateリソースを作成しFastAPIを動かす
 sidebar: Tips
 showTitle: true
 ---
 ## Introduction
 
-ECS fargateとCDKで作成するるIaaSのCode tip
+PythonでECS FargateリソースをCDKで作成し,Fargateリソースを作成しFastAPIを動かす
+
+## TL;DR
+- Python
+- CDK initで始める
+- ECS ECRリソースを作成
+- DockerfileでFastAPIを環境を作成
+
+
+## 前提
+事前にcdkをインストール済み
+
+```sh title=cdkのインストール
+$ npm install -g aws-cdk
+```
+
+## CDKコマンドでPython環境のECRリポジトリ・スタックを作成
+
+cdk initは空フォルダでないといけないので、`mkdir CDKFargateFastAPI`(フォルダ名は適宜)で始める。
+
+```sh
+$ cdk init app --language=python
+```
+
+cdk モジュールをインストールするために`setup.py`に追記
+
+```python title=setup.py
+...
+    install_requires=[
+        "aws-cdk.core==1.32.1",
+        "aws_cdk.aws_ecr", #追加
+        "aws_cdk.aws_ec2", #追加
+        "aws_cdk.aws_ecs", #追加
+        "aws_cdk.aws_ecs_patterns", #追加
+    ],
+...
+```
+
+.env環境でインストール
+
+```sh
+$ source .env/bin/activate
+$ pip install -r requirements.txt
+```
+
+## ECR,ECS Fargateのリソースを作成
+
+それでは実際にリソースを作成していく
+
+```python title=cdk_fargate_ecs/cdk_fargate_stack.py
+
+from aws_cdk import (core, aws_ecr as ecr, aws_ec2 as ec2, aws_ecs as ecs,
+                     aws_ecs_patterns as ecs_patterns)
+
+
+class CdkFargateEcsStack(core.Stack):
+
+    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+        super().__init__(scope, id, **kwargs)
+        
+        ecr_repository = ecr.Repository(
+            self,
+            id='CdkFargateECSSampleECR',
+            repository_name='CdkFargateECSSampleRepo'
+        )
+
+        vpc = ec2.Vpc(
+            self, "CdkFargateECSSampleVpc",
+            max_azs=2
+        )
+
+        cluster = ecs.Cluster(
+            self, 'CdkFargateECSSampleAutoscaling',
+            vpc=vpc
+        )
+
+        fargate_service = ecs_patterns.NetworkLoadBalancedFargateService(
+            self, "CdkFargateSample",
+            cluster=cluster,
+            task_image_options={
+                'image': ecs.ContainerImage.from_ecr_repository(ecr_repository)
+            }
+        )
+
+        fargate_service.service.connections.security_groups[0].add_ingress_rule(
+            peer = ec2.Peer.ipv4(vpc.vpc_cidr_block),
+            connection = ec2.Port.tcp(80),
+            description="Allow http inbound from VPC"
+        )
+
+        scaling = fargate_service.service.auto_scale_task_count(
+            max_capacity=2
+        )
+
+        scaling.scale_on_cpu_utilization(
+            "CpuScaling",
+            target_utilization_percent=50,
+            scale_in_cooldown=core.Duration.seconds(60),
+            scale_out_cooldown=core.Duration.seconds(60),
+        )
+        
+        core.CfnOutput(
+            self, "CdkFargateSampleLoadBalancerDNS",
+            value=fargate_service.load_balancer.load_balancer_dns_name
+        )
+```
 
