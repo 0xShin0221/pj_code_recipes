@@ -1,0 +1,181 @@
+---
+title: ナイーブベイズ分類器を使って文書分類する
+---
+ナイーブベイズ分類器を使って文書分類する
+
+
+## Introduction
+機械学習で自分が分類したルールに基づいてテキストデータを自動分類させる。
+
+## TL;DR
+* Python3を使ってナイーブベイズ分類器を実装する
+* データ収集については割愛します
+
+## テキスト分類とは
+テキスト分類(Text Classification)とは、与えられた文書に対して、あらかじめ定めたいくつかのカテゴリに自動分類することです。  
+身近なところだとスパムメールの自動分類とかグ○シー、ス○ートニュースのニュース記事のレコメンドとかのあたりで使われてたりします。  
+そして、この分類するエンジンのことを分類器とか呼んだりします。
+
+## ナイーブベイズ分類器とは
+ベイズの定理を応用した分類器のことです。数式で表すと下記になります。
+
+$P(cat|doc) = P(cat)P(doc|cat) / P(doc)$
+
+文書$doc$があったとしてその文書は、事前に学習された単語パターンから最も分類されるべきであるカテゴリ$cat$に分類されます。  
+
+簡単に言いますと、  
+1. あらかじめ誰かがカテゴリ分けした文書を、単語単位に分割し、単語毎の出現頻度から、そのカテゴリに関連する単語を登録する。  
+2. 分類器にかけられた文書は、1と同様、単語単位に分割される。  
+3. 出現した単語情報を元に、1で分けられているカテゴリの単語情報とどれが似ているかを比較し、一番近いカテゴリに分類する。  
+  
+こんな感じでテキスト分類できます。
+
+## なんで単語単位に分割するのか
+コンピュータは数値を計算することは得意ですが、文章の意味などを理解することはできません。  
+そのため、機械学習を用いる場合は、文章の情報をうまく数値化してやる必要があります。  
+そこで用いられるのが形態素解析という方法です。（次項で説明します）  
+形態素解析とは、文法的な情報の注記の無い自然言語のテキストデータ（文）から、対象言語の文法や、辞書と呼ばれる単語の品詞等の情報にもとづき、単語の列に分割し、それぞれの形態素の品詞等を判別する作業です。  
+要するに、文章から単語とその品詞情報を持ったリストを生成しますということですね。  
+これにより、文章を「各単語の出現頻度」という数値化することができるというわけです。  
+
+ちなみに、Pythonの形態素解析でよく使われるのは、MecabやJanomeとかが有名です。  
+今回はMecabでやっていきます。  
+
+・Mecab(https://taku910.github.io/mecab/)  
+・Janome(https://mocobeta.github.io/janome/)  
+
+
+## 準備
+* Python3のインストール(できればAnaconda等の仮想環境)
+* pipのインストール
+* 下記moduleのインストール
+```txt title=requirements.txt
+pip install numpy
+pip install pandas
+・・・
+```
+
+## 実装
+```python title=naive_bayes.py
+import os
+import math
+import sys
+import MeCab
+
+class NaiveBayes():
+    def __init__(self):
+        self.vocabularies = set()
+        self.word_count = {}
+        self.category_count = {}
+
+    # 文章を形態素解析し、単語単位にバラバラにする
+    def to_words(self, sentence):
+        tagger = MeCab.Tagger('mecabrc')
+        mecab_result = tagger.parse(sentence)
+        info_of_words = mecab_result.split('\n')
+        words = []
+        for info in info_of_words:
+            if info == 'EOS' or info == '':
+                break
+            info_elems = info.split(',')
+            if info_elems[6] == '*':
+                words.append(info_elems[0][:-3])
+                continue
+            words.append(info_elems[6])
+        return tuple(words)
+
+    def word_count_up(self, word, category):
+        self.word_count.setdefault(category, {})
+        self.word_count[category].setdefault(word, 0)
+        self.word_count[category][word] += 1
+        self.vocabularies.add(word)
+
+    def category_count_up(self, category):
+        self.category_count.setdefault(category, 0)
+        self.category_count[category] += 1
+
+    # 日本語以外のデータを削除する
+    def is_japanese(self, word):
+        import re
+        return re.compile(r'^[ぁ-んァ-ン\u4E00-\u9FD0ー\-、。【】（）]+$').fullmatch(word)
+
+    # 不要な文字を除外する
+    def cleaning(self, doc):
+        remove_char = ["\u3000", "\t", "\n", "\r", " ", ",", ".", "、", "。", "!", "！", "?", "？", "【", "】", "(", ")", "（", "）", "/", "●", "★", "_", "×", "：", "／", "・", "■", "〇", "□", "◇", "◆"]
+        for rc in remove_char:
+            doc = doc.replace(rc, "")
+        return doc
+
+    # 学習部分
+    def train(self, doc, category):
+        doc = self.cleaning(doc)
+        words = self.to_words(doc)
+        for word in words:
+            if(self.is_japanese(word) == False):
+                continue
+
+            self.word_count_up(word, category)
+        self.category_count_up(category)
+
+    # カテゴリの最尤推定
+    def prior_prob(self, category):
+        num_of_categories = sum(self.category_count.values())
+        num_of_docs_of_the_category = self.category_count[category]
+        return num_of_docs_of_the_category / num_of_categories
+
+    # categoryに含まれるwordの出現数を返す
+    def num_of_appearance(self, word, category):
+        if word in self.word_count[category]:
+            return self.word_count[category][word]
+        return 0
+
+    def word_prob(self, word, category):
+        # ベイズの法則の計算。通常、非常に0に近い小数になる。
+        numerator = self.num_of_appearance(word, category) + 1  # +1は加算スムージングのラプラス法
+        denominator = sum(self.word_count[category].values()) + len(self.vocabularies)
+        prob = numerator / denominator
+        return prob
+
+    def score(self, words, category):
+        score = math.log(self.prior_prob(category))
+        for word in words:
+            score += math.log(self.word_prob(word, category))
+        return score
+
+    # 分類
+    def classify(self, doc):
+        best_guessed_category = None
+        max_prob_before = -sys.maxsize
+        words = self.to_words(doc)
+
+        for category in self.category_count.keys():
+            prob = self.score(words, category)
+            if prob > max_prob_before:
+                max_prob_before = prob
+                best_guessed_category = category
+        return best_guessed_category
+
+if __name__ == '__main__':
+    nb = NaiveBayes()
+
+    # トレーニングデータ読み込み
+    path = "./training_data"
+    files = os.listdir(path)
+    for f in files:
+        cat = f.split(".")[0]
+        with open(path + "/" + f, "r", encoding="utf-8") as f:
+            line = f.readline()
+            while(line != ""):
+                nb.train(line, cat)
+                line = f.readline()
+
+    # 文章入力
+    print("文章を入力してください。")
+    text = input()
+    dic = nb.classify(text)
+    dic = sorted(dic.items(), key=lambda x:x[1])
+
+    print("カテゴリ分類結果")
+    for d in dic:
+        print(d[0] + ": " + str(d[1]))
+```

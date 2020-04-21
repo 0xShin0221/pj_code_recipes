@@ -26,3 +26,8 @@
       link: '/tips/IaaS/cdk/ecs-fargate'
     - label: 'CDK-SAM'
       link: '/tips/IaaS/cdk/sam'
+
+- label: MachineLearning
+  items:
+    - label: 'Text Classification'
+      link: '/tips/MachineLearning/naive_bayes'
