@@ -9,7 +9,6 @@ title: ナイーブベイズ分類器を使って文書分類する
 
 ## TL;DR
 * Python3を使ってナイーブベイズ分類器を実装する
-* データ収集については割愛します
 
 ## テキスト分類とは
 テキスト分類(Text Classification)とは、与えられた文書に対して、あらかじめ定めたいくつかのカテゴリに自動分類することです。  
@@ -50,10 +49,27 @@ $P(cat|doc) = P(cat)P(doc|cat) / P(doc)$
 * pipのインストール
 * 下記moduleのインストール
 ```txt title=requirements.txt
-pip install numpy
-pip install pandas
-・・・
+pip install Mecab
 ```
+
+## データセット
+ちょうどMeCabで調べてたら出てきました。  
+http://nlp.ist.i.kyoto-u.ac.jp/kuntt/  
+の解析済みブログコーパスを使用します。
+
+適当なディレクトリに解凍して、corpus2以下の下記ファイルを使用します。
+ - Gourmet.tsv
+ - Keitai.tsv
+ - Kyoto.tsv
+ - Sports.tsv
+
+
+| Category | Occurence |  
+| -- | -- |  
+| Gourmet | 888 |  
+| Keitai | 1278 |  
+| Kyoto | 1498 |  
+| Sports | 522 |  
 
 ## 実装
 ```python title=naive_bayes.py
@@ -130,8 +146,7 @@ class NaiveBayes():
         return 0
 
     def word_prob(self, word, category):
-        # ベイズの法則の計算。通常、非常に0に近い小数になる。
-        numerator = self.num_of_appearance(word, category) + 1  # +1は加算スムージングのラプラス法
+        numerator = self.num_of_appearance(word, category) + 1
         denominator = sum(self.word_count[category].values()) + len(self.vocabularies)
         prob = numerator / denominator
         return prob
@@ -154,6 +169,16 @@ class NaiveBayes():
                 max_prob_before = prob
                 best_guessed_category = category
         return best_guessed_category
+    
+    def classify_rank(self, doc):
+        best_guessed_category = None
+        max_prob_before = -sys.maxsize
+        words = self.to_words(doc)
+
+        cat_dic = {}
+        for category in self.category_count.keys():
+            cat_dic[category] = self.score(words, category)
+        return cat_dic
 
 if __name__ == '__main__':
     nb = NaiveBayes()
@@ -166,16 +191,71 @@ if __name__ == '__main__':
         with open(path + "/" + f, "r", encoding="utf-8") as f:
             line = f.readline()
             while(line != ""):
-                nb.train(line, cat)
+                nb.train(line.split('\t')[1], cat)
                 line = f.readline()
 
     # 文章入力
     print("文章を入力してください。")
     text = input()
-    dic = nb.classify(text)
+    dic = nb.classify_rank(text)
     dic = sorted(dic.items(), key=lambda x:x[1])
 
     print("カテゴリ分類結果")
     for d in dic:
         print(d[0] + ": " + str(d[1]))
 ```
+
+# 試してみる
+とりあえずGourmetカテゴリのサンプルデータを突っ込んでみます。  
+
+```sh
+$ python naive_bayes.py
+文章を入力してください。
+> この間先輩たちにつれられ、河原町の居酒屋へ行ってきました。
+カテゴリ分類結果
+Keitai: -127.92460573410723
+Sports: -123.23625942092022
+Kyoto: -122.67524329675487
+Gourmet: -117.38503070490015
+```
+
+Gourmetのスコアが一番高く評価されてます。  
+正しく分類されてますね。  
+ほかのカテゴリも見てみましょうか。  
+
+```sh
+文章を入力してください。
+> それはプリペイド携帯電話のやり方に対する好みといったところでしょうか。
+カテゴリ分類結果
+Sports: -116.66391709621959
+Gourmet: -116.55556535581087
+Kyoto: -116.12709781793444
+Keitai: -100.0839419113953
+```
+
+```sh
+文章を入力してください。
+嵐山に着いてからは足早にお目当ての時雨殿へ。
+カテゴリ分類結果
+Keitai: -111.50474455557195
+Sports: -109.52124949427528
+Gourmet: -106.10174980717352
+Kyoto: -97.73920280449697
+```
+
+ちょっと文字数多いやつ試してみよう。
+```sh
+文章を入力してください。
+子供のころには父が応援するチームのティーシャツを着て父とキャッチボールをしたり、カレンダーの父が好きな選手の顔にひげとか描いて父に怒られたりしてた。
+カテゴリ分類結果
+Gourmet: -322.59218195952894
+Kyoto: -321.22717702183195
+Keitai: -316.5977002072757
+Sports: -300.22581681899106
+```
+
+おー、ちゃんといけてますねー  
+  
+ほんとは外部データセットに分けて検証しないとなんですが、めんどくさいので割愛  
+
+おわり
