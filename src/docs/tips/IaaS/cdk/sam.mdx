@@ -1,9 +1,212 @@
 ---
-title: AWSでサーバーレスFWのSAMをCDKで管理するTip
-sidebar: Tips
+title: CDKでサーバーレスFWのSAM環境をローカル検証するTip
+description: Awsのcdkを用いてAws SAMの環境をローカルで検証
 showTitle: true
 ---
-## Introduction
 
-SAMで使えるIaaSのCode tips
+## Introduction
+Pythonを使って、AWSサーバーレスFWのSAMをcdkのリソースを使ってローカルで検証した際のTip
+
+## TL;DR
+- CDK(Cloud Development Kit)で作成したSAMリソースをローカル環境で試す
+- Python
+- <span style="color: red; ">local環境で検証はできるがcdk deployはできない</span>
+
+## 前提
+事前にcdk,cdkをインストール済み
+
+```sh title=cdkのインストール
+$ npm install -g aws-cdk
+```
+
+```sh title=sam-cliのインストール
+$ brew tap aws/tap
+$ brew install aws-sam-cli
+```
+
+## CDKでPython環境を構築
+それでは作成していきます。作成するフォルダは空である必要があるので今回は`mkdir CDKsampleApp`と作成しその中で作業を行なっていきます。`cd CDKsampleApp`
+
+```sh
+$ cdk init app --language=python
+$ source .env/bin/activate
+```
+
+今回SAMを利用するので,`setup.py`に追記
+
+```python title=setup.py
+...
+    install_requires=[
+        "aws-cdk.core==1.32.1",
+        "aws-cdk.aws-sam, #追加
+    ],
+...
+```
+
+準備ができたのでCDK initで作成した.env環境にインストール
+
+```sh 
+$ source .env/bin/activate
+$ pip install -r requirements.txt 
+```
+
+
+試しにデプロイ
+
+```sh
+$ cdk deploy
+cd-ksample-app: deploying...
+cd-ksample-app: creating CloudFormation changeset...
+ 0/2 | 16:02:07 | CREATE_IN_PROGRESS   | AWS::CloudFormation::Stack | cd-ksample-app User Initiated
+ 0/2 | 16:02:11 | CREATE_IN_PROGRESS   | AWS::CDK::Metadata | CDKMetadata 
+ 0/2 | 16:02:13 | CREATE_IN_PROGRESS   | AWS::CDK::Metadata | CDKMetadata Resource creation Initiated
+ 1/2 | 16:02:13 | CREATE_COMPLETE      | AWS::CDK::Metadata | CDKMetadata 
+ 2/2 | 16:02:15 | CREATE_COMPLETE      | AWS::CloudFormation::Stack | cd-ksample-app 
+
+ ✅  cd-ksample-app
+
+Stack ARN:
+arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxxx:stack/cd-ksample-app/xxxxxxxxxxxxxxxxxxxxxx
+```
+
+
+## SAMの環境を構築
+[AWS CDKのSAM](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-sam-readme.html)の公式がこちら。
+
+### 1.SAM用のスタックを追加
+`cd_ksample_app/cd_ksample_app_stack.py`に下記を追加します。
+
+クラス名は各自の環境によって変わるのでお気をつけてください。
+
+```python title=cd_ksample_app_stack.py
+
+from aws_cdk import core,aws_sam as sam
+
+
+class CdKampleAppStack(core.Stack):#
+
+    def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+        super().__init__(scope, id, **kwargs)
+
+        # The code that defines your stack goes here
+        function = sam.CfnFunction(    
+            self,    
+            "CDKSamFunction",    
+            runtime="python3.7",    
+            handler="api.lambda_handler",    
+            code_uri="lambda_example/",    
+            events={    
+                "HelloWorld": {    
+                    "type": "Api",    
+                    "properties": {"method": "get", "path": "/example"},    
+                }    
+            },    
+        ) 
+```
+
+### 2.Lambda関数を作成
+
+`mkdir lambda_example`フォルダを作成しその中に`api.py`を作成
+
+```python title=api.py
+import json
+
+def lambda_handler(event, context):    
+    return {
+        "statusCode": 200,
+        "body": json.dumps( 
+            {                        
+                "message": "hello world",
+            }
+        ),
+    }
+```
+
+ここまでで下記の構成となります。
+
+``` title=$tree
+├── README.md
+├── app.py
+├── cdk.json
+├── cdk_sam_app
+│   ├── __init__.py
+│   ├── cdk_sam_app.egg-info
+│   │   ├── PKG-INFO
+│   │   ├── SOURCES.txt
+│   │   ├── dependency_links.txt
+│   │   ├── requires.txt
+│   │   └── top_level.txt
+│   └── cdk_sam_app_stack.py
+├── lambda_example
+│   └── api.py
+├── requirements.txt
+├── setup.py
+└── source.bat
+```
+
+### 3.最後に CloudFormationのtemplate.ymlを作成・修正
+
+
+$ cdk synth --no-staging > template.yml
+
+propertyが上手く出力されないので修正
+
+```yml title=template.yml
+...
+  CDKSamFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda_example/
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Events:
+        CdkLambdaExample:
+          Properties: 
+            Path: /example       # 追加 
+            Method: get          # 追加
+          Type: Api
+...
+```
+
+## local で検証
+ここまでで作成されたリソースとSAM CLIを用いてローカルで検証します。
+
+```sh 
+$ sam local start-api -t template.yml 
+Mounting CDKSamFunction at http://127.0.0.1:3000/example [GET]
+You can now browse to the above endpoints to invoke your functions. You do not need to restart/reload SAM CLI while working on your functions, changes will be reflected instantly/automatically. You only need to restart SAM CLI if you update your AWS SAM template
+2020-04-11 15:37:42  * Running on http://127.0.0.1:3000/ (Press CTRL+C to quit)
+```
+
+無事起動が確認できたら別のクライアントを立ち上げcurlでリクエストを送ってみる
+```sh
+$ curl http://127.0.0.1:3000/example
+{"message": "hello world"}
+```
+
+これで成功
+
+上記の3.でtemplate.ymlを修正していない場合下記のエラーとなるので注意
+
+```sh 
+$ sam local start-api -t template.yml 
+....（省略）
+    path = event_properties.get(SamApiProvider._EVENT_PATH)
+AttributeError: 'NoneType' object has no attribute 'get'
+```
+
+
+## CDK deployができないのでdestroy
+
+ローカルでの検証は問題ないが2020年4月時点ではpropertyも手動で変更した通り`cdk deploy`は動かない。追って情報を追っていきます。
+という事なので、`$ cdk destroy  cd-ksample-app`でサクッとリソースを削除
+```sh
+$ cdk destroy  cd-ksample-app
+Are you sure you want to delete: cd-ksample-app (y/n)? y
+cd-ksample-app: destroying...
+
+ ✅  cd-ksample-app: destroyed
+
+```
+無事おさらばできました。
 
