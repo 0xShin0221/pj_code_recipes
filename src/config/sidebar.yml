@@ -22,8 +22,8 @@
   items:
     - label: 'ALL'
       link: '/tips/IaaS/cdk/all'
-    - label: 'CDK-ECS-Fargate'
-      link: '/tips/IaaS/cdk/ecs-fargate'
+    - label: 'CDK-ECS-Fargate-FastAPI'
+      link: '/tips/IaaS/cdk/fargate-fastAPI'
     - label: 'CDK-SAM'
       link: '/tips/IaaS/cdk/sam'
     - label: 'CDK-Lambda-APIGateway'
