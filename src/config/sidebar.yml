@@ -18,13 +18,13 @@
       link: '/tips/growthhack/all'
     - label: 'Twitter'
       link: '/tips/growthhack/twitter'
-- label: IaaS
+- label: IaC
   items:
     - label: 'ALL'
-      link: '/tips/IaaS/cdk/all'
+      link: '/tips/IaC/cdk/all'
     - label: 'CDK-ECS-Fargate-FastAPI'
-      link: '/tips/IaaS/cdk/fargate-fastAPI'
+      link: '/tips/IaC/cdk/fargate-fastAPI'
     - label: 'CDK-SAM'
-      link: '/tips/IaaS/cdk/sam'
+      link: '/tips/IaC/cdk/sam'
     - label: 'CDK-Lambda-APIGateway'
-      link: '/tips/IaaS/cdk/lambda-apigateway'
+      link: '/tips/IaC/cdk/lambda-apigateway'
