@@ -1,0 +1,80 @@
+---
+title: Python CDK JSIIError(resp.error) の対応
+description: CDKでスタック作成中に出たエラー
+---
+
+## Introduction
+PythonでAWS CDKでLambda,APIGatewayのスタックを作成
+
+## TL;DR
+- CDKでスタック作成中に出たエラーの対応
+- Python
+
+## エラー詳細
+`cdk ls`と`cdk deploy`実行時に下記のエラー
+
+```sh
+raise JSIIError(resp.error) from JavaScriptError(resp.stack)
+jsii.errors.JSIIError: Class extends value undefined is not a constructor or null
+Subprocess exited with error 1
+```
+
+## 対応
+- aws cdk モジュールのバージョンを統一した
+- 統一する際は最新版で統一してみた
+- 上手くいった
+
+### 対応前
+私の場合は下記の状態だった
+
+```sh
+$ pip list
+Package                        Version Location
+------------------------------ ------- ------------------------------------------------------------------
+attrs                          19.3.0
+aws-cdk.assets                 1.38.0
+aws-cdk.aws-certificatemanager 1.38.0
+aws-cdk.aws-cloudfront         1.38.0
+aws-cdk.aws-cloudwatch         1.38.0
+aws-cdk.aws-ec2                1.38.0
+aws-cdk.aws-events             1.38.0
+aws-cdk.aws-iam                1.38.0
+aws-cdk.aws-kms                1.38.0
+aws-cdk.aws-lambda             1.38.0
+aws-cdk.aws-logs               1.38.0
+aws-cdk.aws-route53            1.38.0
+aws-cdk.aws-s3                 1.38.0
+aws-cdk.aws-s3-assets          1.38.0
+aws-cdk.aws-s3-deployment      1.38.0
+aws-cdk.aws-sqs                1.38.0
+aws-cdk.aws-ssm                1.38.0
+aws-cdk.cloud-assembly-schema  1.34.1
+aws-cdk.core                   1.34.1
+aws-cdk.cx-api                 1.34.1
+aws-cdk.region-info            1.38.0
+```
+
+## 対応詳細
+今回、バージョン相違が見られるのは下記
+
+- aws-cdk.core,cloud-assembly-schema,cx-api
+
+3つだが,coreに依存関係にあるモジュールだと思われるのでcoreを`1.38.0`に合わせて再度インストール
+
+> 実際の環境については、各々異なるため環境に合った対応をしてください。
+
+今回は`./setup.py`から依存モジュールをインストールしている為、下記に変更
+
+```python title=setup.py
+...
+    install_requires=[
+        "aws-cdk.core==1.38.0",
+        "aws-cdk.aws-iam", #追記
+        "aws-cdk.aws-s3",  #追記
+        "aws-cdk.aws-cloudfront", #追記
+        "aws-cdk.aws-s3-deployment" #追記
+    ],
+...
+```
+
+`cdk ls` でスタックの名前が出力されれば無事対応完了
