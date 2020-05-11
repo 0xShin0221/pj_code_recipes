@@ -28,3 +28,9 @@
       link: '/tips/IaC/cdk/sam'
     - label: 'CDK-Lambda-APIGateway'
       link: '/tips/IaC/cdk/lambda-apigateway'
+    - label: 'CDK-CloudFront-S3'
+      link: '/tips/IaC/cdk/cloudfront-s3'
+- label: Error
+  items:
+    - label: 'CDK-JSIIError'
+      link: '/error/cdk/jsiierror'
