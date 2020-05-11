@@ -1,6 +1,10 @@
-## 👾Site
+## 👾 Site
 
+Product:
 https://code-recipes.netlify.com/
+
+Dev:
+https://stg-code-recipies.netlify.app
 
 
 ## 💻 About Code Recipes
