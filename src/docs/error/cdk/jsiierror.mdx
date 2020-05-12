@@ -1,10 +1,35 @@
 ---
-title: Python CDK JSIIError(resp.error) の対応
-description: CDKでスタック作成中に出たエラー
+title: Python CDK｜Class extends value undefinedJSIIError(resp.error) の対応
+description: CDKでスタック作成後のjsii.errors.JSIIErrorClass extends value undefinedというerror
 ---
 
 ## Introduction
-PythonでAWS CDKでLambda,APIGatewayのスタックを作成
+PythonでAWS CDKを用いてスタックを作成中にcdk モジュールを読み込まない際のエラー
+私は`s3-cloudfront`のスタックを作成時に遭遇。スタックが何であるかは関係はないが
+stackはこのような状況で定義
+　　
+これはOK:
+```python title=example_stack.py
+from aws_cdk import (
+    core,
+    aws_iam as iam,
+    aws_s3 as s3,
+    # aws_s3_deployment as s3deploy,
+    # aws_cloudfront as cloudfront,
+)
+```
+
+これはFailed:
+```python title=example_stack.py
+from aws_cdk import (
+    core,
+    aws_iam as iam,
+    aws_s3 as s3,
+    aws_s3_deployment as s3deploy,
+    aws_cloudfront as cloudfront,
+)
+```
+
 
 ## TL;DR
 - CDKでスタック作成中に出たエラーの対応
