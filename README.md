@@ -1,7 +1,7 @@
 ## 👾 Site
 
 Product:
-https://code-recipes.netlify.com/
+https://code-recipes.netlify.app
 
 Dev:
 https://stg-code-recipies.netlify.app
