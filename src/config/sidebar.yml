@@ -2,8 +2,6 @@
 
 - label: 'Introduction'
   link: '/'
-- label: 'Getting started'
-  link: '/getting-started'
 - label: Guide
   items:
     - label: 'Creating docs'
@@ -12,6 +10,8 @@
       link: '/guide/member'
     - label: 'Templates'
       link: '/guide/templates'
+    - label: 'Getting started'
+      link: '/getting-started'
 - label: GrowthHack
   items:
     - label: 'ALL'
