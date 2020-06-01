@@ -2,8 +2,6 @@
 
 - label: 'Introduction'
   link: '/'
-- label: 'Getting started'
-  link: '/getting-started'
 - label: Guide
   items:
     - label: 'Creating docs'
@@ -12,19 +10,27 @@
       link: '/guide/member'
     - label: 'Templates'
       link: '/guide/templates'
+    - label: 'Getting started'
+      link: '/getting-started'
 - label: GrowthHack
   items:
     - label: 'ALL'
       link: '/tips/growthhack/all'
     - label: 'Twitter'
       link: '/tips/growthhack/twitter'
-- label: IaaS
+- label: IaC
   items:
     - label: 'ALL'
-      link: '/tips/IaaS/cdk/all'
+      link: '/tips/IaC/cdk/all'
     - label: 'CDK-ECS-Fargate-FastAPI'
-      link: '/tips/IaaS/cdk/fargate-fastAPI'
+      link: '/tips/IaC/cdk/fargate-fastAPI'
     - label: 'CDK-SAM'
-      link: '/tips/IaaS/cdk/sam'
+      link: '/tips/IaC/cdk/sam'
     - label: 'CDK-Lambda-APIGateway'
-      link: '/tips/IaaS/cdk/lambda-apigateway'
+      link: '/tips/IaC/cdk/lambda-apigateway'
+    - label: 'CDK-CloudFront-S3'
+      link: '/tips/IaC/cdk/cloudfront-s3'
+- label: Error
+  items:
+    - label: 'CDK-JSIIError'
+      link: '/error/cdk/jsiierror'

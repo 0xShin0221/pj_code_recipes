@@ -5,10 +5,11 @@ title: 'Getting started'
 You can clone from here:
 
 ```sh
-git clone https://github.com/sintaro/sales-hack
+git clone https://github.com/sintaro/pj_code_recipes
 ```
 
-But, if you prefer, you can install and configure manually.
+以下は本サイトのGatsby themeの設定です。
+____
 
 ```bash
 # Using Yarn:
@@ -33,15 +34,17 @@ npm i @rocketseat/gatsby-theme-docs
 ```js title=gatsby-config.js
 module.exports = {
   siteMetadata: {
-    siteTitle: `@rocketseat/gatsby-theme-docs`,
-    defaultTitle: `@rocketseat/gatsby-theme-docs`,
-    siteTitleShort: `gatsby-theme-docs`,
-    siteDescription: `OSSで管理しているCode tips集のメディアです`,
-    siteUrl: `https://codetips.netlify.com`,
-    siteAuthor: `@rocketseat`,
+    siteTitle: `Code Recipes`,
+    defaultTitle: `Code Recipes`,
+    siteTitleShort: `code Recipes`,
+    siteDescription: `OSSのCodeのレシピ集`,
+    siteUrl: `https://code-recipes.netlify.com`,
+    siteAuthor: `@sintaro`,
     siteImage: `/banner.png`,
     siteLanguage: `jp`,
-    themeColor: `#ff8733`,
+    themeColor: `#e87624`,
+    basePath: `/`,
+    footer: `@code recipes`,
   },
   plugins: [
     {
